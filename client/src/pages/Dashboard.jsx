@@ -17,7 +17,7 @@ const Dashboard = () => {
     const [showPopUp, setShowPopUp] = useState("");
     const [showMedicalForm, setShowMedicalForm] = useState(false);
     const [medicalInfo, setMedicalInfo] = useState(null);
-    const sosSound = useRef(new Audio("/siren-alert-96052.mp3"));
+    const sosSound = useRef(new Audio("/alert-85101.mp3"));
     const recognitionRef = useRef(null);
     const confirmationPendingRef = useRef(false);
 
@@ -196,8 +196,8 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50/80 to-gray-200/90 flex flex-col items-center text-center p-6 relative">
-            <Card className="w-full max-w-lg bg-white/90 p-6 rounded-2xl shadow-md text-center border border-gray-200 hover:shadow-lg transition-all relative m-5 ">
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex flex-col items-center text-center p-6 relative">
+            <Card className="w-full max-w-lg p-6 rounded-2xl shadow-md text-center hover:shadow-lg transition-all relative m-5 ">
                 <h2 className="text-2xl font-semibold text-gray-900 ">
                     Hey, {user?.name}
                 </h2>
@@ -207,7 +207,7 @@ const Dashboard = () => {
                 <button id="start-btn" onClick={startListening} className="mt-4 px-4 py-2 bg-blue-800 text-white rounded">Start Voice Recognition</button>
             </Card>
             <div className="grid grid-cols-2 gap-4 max-w-md mt-6 w-full">
-                <Card className="p-4 flex flex-col items-center bg-white/75 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105"
+                <Card className="p-4 flex flex-col items-center rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105"
                     onClick={() => {
                         if (!medicalInfo) {
                             handleCard("/dashboard/medical-info", "Medical Info Required to generate QR!!");
@@ -218,7 +218,7 @@ const Dashboard = () => {
                     <FaQrcode size={26} className="text-blue-600" />
                     <p className="mt-2 text-sm font-semibold">Generate QR Code</p>
                 </Card>
-                <Card className="p-4 flex flex-col items-center bg-white/75 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105"
+                <Card className="p-4 flex flex-col items-center rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105"
                     onClick={() => {
                         if (!medicalInfo) {
                             handleCard("/dashboard/medical-info", "Medical Info Required to Access Profile");
@@ -229,7 +229,7 @@ const Dashboard = () => {
                     <FaClipboardList size={26} className="text-green-600" />
                     <p className="mt-2 text-sm font-semibold">Medical Profile</p>
                 </Card>
-                <Card className="p-4 flex flex-col items-center bg-white/75 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105">
+                <Card className="p-4 flex flex-col items-center rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105">
                     <FaHospital size={26} className="text-gray-700" />
                     <p className="mt-2 text-sm font-semibold">Emergency Services</p>
                 </Card>

@@ -58,85 +58,53 @@
 // export default ProfilePage;
 
 
-import React from 'react';
-import { Avatar, Box, Button, Divider, Typography, Stack, Paper } from '@mui/material';
+import React, { useContext } from 'react';
+import { Avatar, Box, Button, Divider, Typography, Stack, Paper, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
-  console.log(user);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate('/');
+  };
 
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: 4,
-      bgcolor: '#F4F6F8',
-    }}>
-      <Paper elevation={3} sx={{
-        width: '100%',
-        maxWidth: 450,
-        padding: 4,
-        borderRadius: 4,
-        bgcolor: '#FFFFFF',
-        boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
-      }}>
-        {/* Profile Info */}
+    <Container maxWidth="md" sx={{ py: 6 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 8 }}>
+        {/* Profile Avatar and Info */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <Avatar sx={{ width: 100, height: 100, mb: 1, bgcolor: '#1E88E5' }} />
-          <Typography variant="h5" sx={{ fontWeight: 600, color: '#1E88E5' }}>
+          <Avatar sx={{ width: 90, height: 90, mb: 1, bgcolor: 'primary.main' }}>
+            {user?.name?.[0]}
+          </Avatar>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
             {user?.name}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#757575' }}>
+          <Typography variant="body2" color="text.secondary">
             {user?.email}
           </Typography>
           <Button
-            variant="text"
             size="small"
-            sx={{ mt: 1, color: '#1E88E5' }}
+            variant="outlined"
+            sx={{ mt: 1, borderRadius: 5, bgcolor: 'primary.main', color: 'whitesmoke', padding: 1 }}
             onClick={() => navigate('/edit-profile')}
           >
             Edit Profile
           </Button>
         </Box>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 1 }} />
 
-        {/* My Information */}
-        <Stack spacing={1.5}>
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              borderColor: '#42A5F5',
-              color: '#1E88E5',
-              borderRadius: 2,
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#E3F2FD' }
-            }}
-            onClick={() => navigate('/dashboard/medical-info')}
-          >
+        {/* Links to Info Pages */}
+        <Stack spacing={2}>
+          <Button variant="outlined" onClick={() => navigate('/dashboard/medical-info')} sx={{ borderRadius: 5 }}>
             Medical Information
           </Button>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              borderColor: '#42A5F5',
-              color: '#1E88E5',
-              borderRadius: 2,
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#E3F2FD' }
-            }}
-            onClick={() => navigate('/dashboard/insurance')}
-          >
+          <Button variant="outlined" onClick={() => navigate('/dashboard/insurance')} sx={{ borderRadius: 5 }}>
             Insurance Information
           </Button>
         </Stack>
@@ -144,58 +112,21 @@ const ProfilePage = () => {
         <Divider sx={{ my: 2 }} />
 
         {/* Security Settings */}
-        <Stack spacing={1.5}>
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              borderColor: '#42A5F5',
-              color: '#1E88E5',
-              borderRadius: 2,
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#E3F2FD' }
-            }}
-            onClick={() => navigate('/change-password')}
-          >
+        <Stack spacing={2}>
+          <Button variant="outlined" onClick={() => navigate('/change-password')} sx={{ borderRadius: 5 }}>
             Change Password
           </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              borderColor: '#42A5F5',
-              color: '#1E88E5',
-              borderRadius: 2,
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#E3F2FD' }
-            }}
-            onClick={() => navigate('/forgot-password')}
-          >
+          <Button variant="outlined" onClick={() => navigate('/forgot-password')} sx={{ borderRadius: 5 }}>
             Forgot Password
           </Button>
-
-          <Button
-            fullWidth
-            variant="contained"
-            color="error"
-            sx={{
-              borderRadius: 2,
-              textTransform: 'none',
-              '&:hover': { backgroundColor: '#D32F2F' }
-            }}
-            onClick={() => {
-              localStorage.removeItem("token");
-              setUser(null);
-              navigate('/');
-            }}
-          >
+          <Button variant="contained" color="error" onClick={handleLogout} sx={{ borderRadius: 5 }}>
             Logout
           </Button>
         </Stack>
+
       </Paper>
-    </Box>
+    </Container>
   );
 };
 
 export default ProfilePage;
-

@@ -221,8 +221,8 @@ const MedicalInfoForm = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto">
-      <Card className="p-8 border-none border-15 bg-gray-200">
+    <div className="max-w-xl mx-auto w-90">
+      <div className="border-0 rounded-2xl g-gradient-to-br from-blue-50 to-gray-100 p-5">
         <CardContent>
           <h2 className="text-2xl font-bold text-center mb-6 text-blue-800">Medical Information</h2>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -418,50 +418,9 @@ const MedicalInfoForm = () => {
             )}
           </form>
         </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };
 
 export default MedicalInfoForm;
-
-                  // <div key={index} className="space-y-4">
-                  //   <Input
-                  //     name={`emergencyContact[${index}].name`}
-                  //     value={contact.name}
-                  //     onChange={handleEmergencyContactChange(index)}
-                  //     placeholder="Contact Name"
-                  //   />
-                  //   <Input
-                  //     name={`emergencyContact[${index}].phone`}
-                  //     value={contact.phone}
-                  //     onChange={handleEmergencyContactChange(index)}
-                  //     placeholder="Phone Number"
-                  //   />
-                  //   <select
-                  //     name={`emergencyContact[${index}].relation`}
-                  //     value={contact.relation}
-                  //     onChange={handleEmergencyContactChange(index)}
-                  //     className="p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300 bg-gray-100 text-gray-900 font-medium w-full"
-                  //   >
-                  //     <option value="">Relation</option>
-                  //     <option value="Parent">Parent</option>
-                  //     <option value="Sibling">Sibling</option>
-                  //     <option value="Spouse">Spouse</option>
-                  //     <option value="Friend">Friend</option>
-                  //     <option value="Other">Other</option>
-                  //   </select>
-                  //   <Input
-                  //     name={`emergencyContact[${index}].city`}
-                  //     value={contact.city}
-                  //     onChange={handleEmergencyContactChange(index)}
-                  //     placeholder="City"
-                  //   />
-                  //   <Input
-                  //     name={`emergencyContact[${index}].priority`}
-                  //     value={contact.priority}
-                  //     onChange={handleEmergencyContactChange(index)}
-                  //     placeholder="Priority (1 is highest)"
-                  //     type="number"
-                  //   />
-                  // </div>

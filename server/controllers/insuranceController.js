@@ -13,12 +13,12 @@ export const getInsuranceInfo = async (req, res) => {
 
     let insuranceData = await Insurance.findOne({ userId: req.user.id });
     if (!insuranceData) {
-      insuranceData = new Insurance({ userId: req.user.id });
-      await insuranceData.save();
+      return res.status(404).json({ message: "No insurance information found. Please add details." });
     }
 
     res.json(insuranceData);
   } catch (error) {
+    console.error("🔴 Error fetching insurance info:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -31,7 +31,7 @@ export const getInsuranceInfo = async (req, res) => {
 export const updateInsuranceInfo = async (req, res) => {
   try {
     const { provider, policyNumber, policyHolder, expiryDate, emergencyContact } = req.body;
-    console.log("Received insurance data:", req.body); // Log the incoming data
+    console.log("Received insurance data:", req.body);
 
     if (!req.user?.id) {
       console.log("🔴 User ID missing in request!");
@@ -44,11 +44,18 @@ export const updateInsuranceInfo = async (req, res) => {
       insuranceData = new Insurance({ userId: req.user.id });
     }
 
-    insuranceData.provider = provider ?? insuranceData.provider;
-    insuranceData.policyNumber = policyNumber ?? insuranceData.policyNumber;
-    insuranceData.policyHolder = policyHolder ?? insuranceData.policyHolder;
-    insuranceData.expiryDate = expiryDate ?? insuranceData.expiryDate;
-    insuranceData.emergencyContact = emergencyContact ?? insuranceData.emergencyContact;
+    if (provider !== undefined) insuranceData.provider = provider;
+    if (policyNumber !== undefined) insuranceData.policyNumber = policyNumber;
+    if (policyHolder !== undefined) insuranceData.policyHolder = policyHolder;
+    if (emergencyContact !== undefined) insuranceData.emergencyContact = emergencyContact;
+
+    if (expiryDate) {
+      const parsedDate = new Date(expiryDate);
+      if (isNaN(parsedDate)) {
+        return res.status(400).json({ error: "Invalid expiry date format." });
+      }
+      insuranceData.expiryDate = parsedDate;
+    }
 
     await insuranceData.save();
 

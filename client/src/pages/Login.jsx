@@ -130,9 +130,8 @@ const Login = () => {
                     </form>
 
                     {/* Google Login */}
-                    <div className="mt-6 flex justify-center w-full">
+                    <div className="mt-6 flex justify-center w-full rounded-lg">
                         <GoogleLogin
-                            // clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                             onSuccess={(credentialResponse) => {
                                 console.log("One Tap Response:", credentialResponse);
                                 handleGoogleLogin(credentialResponse);

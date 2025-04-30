@@ -1,9 +1,34 @@
 @import "tailwindcss";
 
 html, body, #root {
+  margin: 0;
+  padding: 0;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: "Winki Sans"
 }
+/* body {
+  background: linear-gradient(135deg, #4e7c7e, #6b8f8a, #8fbbd3, #c5d1e6);
+  background-size: 300% 300%;
+  animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+} */
+
+body {
+  background: linear-gradient(to left, #A7C7E7, #D3A6F1),
+              linear-gradient(to right, #A7C7E7, #D3A6F1);
+  background-size: 100% 100%;
+  background-position: left center, right center;
+  height: 100vh;
+}
+
+
+
+

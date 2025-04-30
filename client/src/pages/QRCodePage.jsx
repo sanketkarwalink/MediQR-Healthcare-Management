@@ -32,7 +32,7 @@ const QRCodePage = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-3xl mx-auto text-center">
+    <div className="p-6 max-w-2xl w-95 mx-auto text-center">
       <h2 className="text-2xl font-bold">Your QR Code</h2>
       {loading ? (
         <p>Loading QR code...</p>
