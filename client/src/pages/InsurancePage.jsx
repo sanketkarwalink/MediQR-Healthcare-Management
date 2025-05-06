@@ -70,7 +70,7 @@ function InsurancePage() {
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 p-5 w-95'>
-      <div className="w-85 max-w-lg bg-white/80 rounded-2xl shadow-2xl p-8 transition-all duration-300">
+      <div className="w-90 max-w-lg bg-white/80 rounded-2xl shadow-2xl p-8 transition-all duration-300">
       <div className="flex-col items-center justify-center mb-4">
         <h2 className="text-xl font-bold">Insurance Information</h2>
         <span className={`text-md font-semibold ${isComplete ? 'text-green-600' : 'text-red-500'}`}>
@@ -87,10 +87,11 @@ function InsurancePage() {
           {/* <p><strong>Emergency Contact:</strong> {insuranceData.emergencyContact || 'Not provided'}</p> */}
           <p>
             <strong>Emergency Contact:</strong>{' '}
+            📞
             {insuranceData.emergencyContact ? (
               <a
                 href={`tel:+91${insuranceData.emergencyContact}`}
-                className="text-blue-600 underline hover:text-blue-800"
+                className="text-blue-600 underline hover:text-blue-800 m-1"
               >
                 {insuranceData.emergencyContact}
               </a>

@@ -32,7 +32,7 @@ function App() {
           </Route>
         </Routes>
     </Router>
-    <ToastContainer position="top-center" autoClose={5000} />
+    <ToastContainer position="top-center" autoClose={6000} />
     </AuthProvider>
   );
 }

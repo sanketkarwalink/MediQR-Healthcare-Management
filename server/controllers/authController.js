@@ -78,10 +78,11 @@ const googleLogin = async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
 
-        const payload = ticket.getPayload(); // Store the payload properly
+        const payload = ticket.getPayload();
+        console.log('Google payload:', payload);
         console.log("Token Verified:", payload);
 
-        const { email, name, picture, sub: googleId } = payload; // Extract all values correctly
+        const { email, name, picture, sub: googleId } = payload;
 
         let user = await User.findOne({ email });
         if (!user) {

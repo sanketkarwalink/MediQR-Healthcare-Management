@@ -22,14 +22,13 @@ export const sendSOSAlert = async (req, res) => {
 
       const medicalInfo = await MedicalData.findOne({ userId });
 
-      const sortedContacts = medicalInfo.emergencyContact.sort((a, b) => a.priority - b.priority);
-      const contact = sortedContacts[0];
-
-      if (!contact || !contact.phone) {
-        console.error("❌ No valid emergency contact phone found for user:", userId);
-        return res.status(400).json({ message: "No valid emergency contact phone found!" });
+      if (!medicalInfo || !medicalInfo.emergencyContact?.length) {
+        return res.status(400).json({ message: "No emergency contacts found!" });
       }
 
+      const sortedContacts = medicalInfo.emergencyContact.sort((a, b) => a.priority - b.priority).slice(0, 2);
+
+      const contact = sortedContacts[0];
 
       let emergencyPhone = contact.phone;
 
@@ -46,7 +45,7 @@ export const sendSOSAlert = async (req, res) => {
 
       await client.messages.create({
           body: message,
-          from: process.env.TWILIO_WHATSAPP_NO,
+          from: process.env.TWILIO_PHONE_NO,
           to: `whatsapp:${emergencyPhone}`,
       });
 

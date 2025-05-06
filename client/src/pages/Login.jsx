@@ -10,6 +10,7 @@ import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { Eye, EyeOff, Loader, CheckSquare, Square, LogIn } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
     const [email, setEmail] = useState(localStorage.getItem("rememberedEmail") || "");
@@ -20,6 +21,7 @@ const Login = () => {
     const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe") === "true");
     const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     useEffect(() => {
         if (rememberMe && email) {
@@ -46,8 +48,9 @@ const Login = () => {
 
             navigate("/dashboard");
         } catch (error) {
-            console.error("Login failed:", error.response?.data?.message || error.message);
-            setError(error.response?.data?.message || "Invalid credentials. Please try again.");
+            const message = error.response?.data?.message || "Invalid credentials. Please try again.";
+            setError(message);
+            console.error("Login failed:", message || error.message);
         } finally {
             setLoading(false);
         }
@@ -83,7 +86,7 @@ const Login = () => {
         <div className="flex justify-center items-center min-h-screen w-full">
             <Card>
                 <CardContent>
-                    <h2 className="text-4xl font-extrabold text-center mb-4 text-gray-800">Welcome Back!</h2>
+                    <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">Welcome Back!</h2>
                     <p className="text-center text-gray-500 mb-6">Login to access your account</p>
                     <form className="space-y-6" onSubmit={handleLogin}>
                         {/* Email Input */}
@@ -132,11 +135,13 @@ const Login = () => {
                     {/* Google Login */}
                     <div className="mt-6 flex justify-center w-full rounded-lg">
                         <GoogleLogin
+                            clientId={clientId}
                             onSuccess={(credentialResponse) => {
                                 console.log("One Tap Response:", credentialResponse);
                                 handleGoogleLogin(credentialResponse);
                             }}
                             onError={() => setError("Google login failed. Try again.")}
+                            uxMode="popup"
                             useOneTap
                         />
                     </div>

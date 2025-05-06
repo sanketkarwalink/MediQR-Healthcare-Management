@@ -47,8 +47,10 @@ const MedicalInfoForm = () => {
         }
       });
       if (res.status === 401) {
+        localStorage.removeItem("token");
+        toast.error("Session Expired! Try logging in again");
         console.error("Unauthorized: Invalid token or session expired.");
-        // Handle logout or token refresh
+        navigate('/');
         return;
       }
       if (!res.ok) {
@@ -235,7 +237,7 @@ const MedicalInfoForm = () => {
                     value={formData.bloodGroup}
                     onChange={handleChange}
                     required
-                    className="p-3 border-1 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300 bg-gray-100 text-gray-900 font-medium w-full"
+                    className="px-4 py-2.5 border rounded-3xl shadow-sm focus:ring-2 focus:ring-blue-400 text-gray-900 font-medium w-full focus:outline-none  focus:border-blue-400  border-gray-400"
                   >
                     <option value="">Select</option>
                     <option value="A+">A+</option>
@@ -274,7 +276,7 @@ const MedicalInfoForm = () => {
                     value={formData.allergies}
                     onChange={handleChange}
                     placeholder="Other allergies"
-                    className="p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300 w-full mt-2"
+                    className="p-3 border shadow-sm focus:ring-2 focus:ring-blue-300 w-full mt-2"
                   />
                 </div>
                 <div>
@@ -284,7 +286,7 @@ const MedicalInfoForm = () => {
                     value={formData.conditions}
                     onChange={handleChange}
                     placeholder="Enter any medical conditions"
-                    className="p-3 border rounded-lg shadow-sm w-full"
+                    className="p-3 border shadow-sm w-full"
                   />
                 </div>
                 <div>
@@ -294,7 +296,7 @@ const MedicalInfoForm = () => {
                     value={formData.medications}
                     onChange={handleChange}
                     placeholder="Enter medications you're taking"
-                    className="p-3 border rounded-lg shadow-sm w-full"
+                    className="p-3 border shadow-sm w-full"
                   />
                 </div>
                 <Button
@@ -332,7 +334,7 @@ const MedicalInfoForm = () => {
                     <motion.div
                       key="content"
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
+                      animate={{ height: "auto", opacity: 1, padding: 3 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                       className="overflow-hidden mt-4 space-y-4"
@@ -353,7 +355,7 @@ const MedicalInfoForm = () => {
                         name={`emergencyContact[${index}].relation`}
                         value={contact.relation}
                         onChange={handleEmergencyContactChange(index)}
-                        className="p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300 bg-gray-100 text-gray-900 font-medium w-full"
+                        className="px-4 py-2.5 border rounded-3xl shadow-sm focus:ring-2 focus:ring-blue-400 text-gray-900 font-medium w-full focus:outline-none  focus:border-blue-400  border-gray-400"
                       >
                         <option value="">Relation</option>
                         <option value="Parent">Parent</option>
