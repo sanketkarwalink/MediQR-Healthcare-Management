@@ -137,13 +137,13 @@ const Dashboard = () => {
     const sendSOS = async (latitude, longitude) => {
         console.log("📍 Sending SOS with location:", latitude, longitude);
         try {
-            const emergencyContact = medicalInfo?.emergencyContact || "9914416768";
+            const emergencyContacts = medicalInfo?.emergencyContact || [];
             const message = `🚨 SOS Alert! ${user.name} needs help! Last known location: https://maps.google.com/?q=${latitude},${longitude}`;
 
             await axios.post("http://localhost:5000/api/sos", {
                 userId: user.id,
                 latitude,
-                longitude,
+                longitude
             });
 
             setQrData(`http://localhost:5173/api/medical/qr/${user.id}`);

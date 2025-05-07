@@ -18,7 +18,7 @@ app.use(cors({
 app.use(json());
 app.use('/api/auth', authRoutes);
 app.use('/api/medical', medicalRoutes);
-app.use('/api', sosRoutes);
+app.use('/api/sos', sosRoutes);
 app.use('/api/insurance', insuranceRoutes);
 
 connect(process.env.MONGO_URI, {

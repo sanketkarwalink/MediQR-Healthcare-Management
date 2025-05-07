@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import Card from './Card';
 import CardContent from './CardContent';
 import Input from "./Input";
@@ -22,6 +23,8 @@ const MedicalInfoForm = () => {
     medications: "",
     emergencyContact:[{ name: "", phone: "", relation: "", city: "", priority: "" }],
   });
+  const [verifyingIndex, setVerifyingIndex] = useState(null);
+  const [otpInputs, setOtpInputs] = useState({});
 
   const [expandedIndex, setExpandedIndex] = useState(null);
   const toggleExpand = (index) => {

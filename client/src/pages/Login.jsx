@@ -58,7 +58,7 @@ const Login = () => {
 
     const handleGoogleLogin = async (credentialResponse) => {
         console.log("Google Token:", credentialResponse);
-        if (!credentialResponse.credential) {
+        if (!credentialResponse?.credential) {
             console.error("No ID token received.");
             return;
         }
@@ -67,7 +67,7 @@ const Login = () => {
                 token: credentialResponse.credential,
             });
 
-            console.log("Server Response:", res.data); // Debugging
+            console.log("Server Response:", res.data);
 
             localStorage.setItem("token", res.data.token);
             setUser(jwtDecode(res.data.token));
@@ -80,6 +80,14 @@ const Login = () => {
             setError("Google login failed. Try again.");
         }
     };
+    useEffect(() => {
+        const timer = setTimeout(() => {
+          if (window.google?.accounts?.id) {
+            window.google.accounts.id.prompt();
+          }
+        }, 5000);
+        return () => clearTimeout(timer);
+      }, []);
 
 
     return (
@@ -141,7 +149,6 @@ const Login = () => {
                                 handleGoogleLogin(credentialResponse);
                             }}
                             onError={() => setError("Google login failed. Try again.")}
-                            uxMode="popup"
                             useOneTap
                         />
                     </div>
@@ -151,14 +158,14 @@ const Login = () => {
                     <p className="text-center mt-4 text-gray-600">
                         Don't have an account? <span className="text-blue-700 font-semibold cursor-pointer hover:underline" onClick={() => navigate("/register")}>Register</span>
                     </p>
-                    <p className="text-center text-gray-600 mt-2">
+                    {/* <p className="text-center text-gray-600 mt-2">
                         <span
                             className="text-blue-700 font-semibold cursor-pointer hover:underline"
                             onClick={() => navigate("/forgot-password")}
                         >
                             Forgot Password?
                         </span>
-                    </p>
+                    </p> */}
                 </CardContent>
             </Card>
         </div>
