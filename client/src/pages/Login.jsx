@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import Card from "../components/Card";
 import CardContent from "../components/CardContent";
 import Input from "../components/Input";
@@ -19,17 +19,22 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(localStorage.getItem("rememberMe") === "true");
-    const { setUser } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     const navigate = useNavigate();
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     useEffect(() => {
-        if (rememberMe && email) {
-            localStorage.setItem("rememberedEmail", email);
-        } else {
-            localStorage.removeItem("rememberedEmail");
+        if (user) {
+            navigate("/dashboard", { replace: true });
         }
-    }, [email, rememberMe]);
+        }, [user, navigate]);
+
+    //     if (rememberMe && email) {
+    //         localStorage.setItem("rememberedEmail", email);
+    //     } else {
+    //         localStorage.removeItem("rememberedEmail");
+    //     }
+    // }, [email, rememberMe]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -46,7 +51,7 @@ const Login = () => {
             if (rememberMe) localStorage.setItem("rememberMe", "true");
             else localStorage.removeItem("rememberMe");
 
-            navigate("/dashboard");
+            navigate("/dashboard", {replace: true});
         } catch (error) {
             const message = error.response?.data?.message || "Invalid credentials. Please try again.";
             setError(message);
@@ -74,7 +79,7 @@ const Login = () => {
 
             console.log("Decoded User:", jwtDecode(res.data.token)); // Debugging
 
-            navigate("/dashboard");
+            navigate("/dashboard", {replace: true});
         } catch (error) {
             console.error("Google login failed:", error.response?.data?.message || error.message);
             setError("Google login failed. Try again.");

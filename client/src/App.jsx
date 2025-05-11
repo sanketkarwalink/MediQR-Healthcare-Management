@@ -13,26 +13,35 @@ import QRResultPage from './pages/QRResultPage.jsx';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import MedicalCard from './pages/MedicalCard.jsx';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "Winki Sans"
+  },
+});
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/qr-result/:userId" element={<QRResultPage />} />
-          <Route path="medical-card" element={<MedicalCard />} />
-          <Route path="/dashboard/*" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="qr-code" element={<QRCodePage />} />
-            <Route path="medical-info" element={<MedicalDetails />} />
-            <Route path="insurance" element={<InsurancePage />} />
-          </Route>
-        </Routes>
-    </Router>
-    <ToastContainer position="top-center" autoClose={6000} />
+      <ThemeProvider theme={theme}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/qr-result/:userId" element={<QRResultPage />} />
+            <Route path="medical-card" element={<MedicalCard />} />
+            <Route path="/dashboard/" element={<DashboardLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="qr-code" element={<QRCodePage />} />
+              <Route path="medical-info" element={<MedicalDetails />} />
+              <Route path="insurance" element={<InsurancePage />} />
+            </Route>
+          </Routes>
+        </Router>
+        <ToastContainer position="top-center" autoClose={6000} />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

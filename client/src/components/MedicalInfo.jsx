@@ -17,14 +17,12 @@ const MedicalInfoForm = () => {
   const [showAllAllergies, setShowAllAllergies] = useState(false);
   const [formData, setFormData] = useState({
     bloodGroup: "",
-    allergies: "",
-    selectedAllergies: [],
+    allergies: [],
     conditions: "",
     medications: "",
     emergencyContact:[{ name: "", phone: "", relation: "", city: "", priority: "" }],
   });
-  const [verifyingIndex, setVerifyingIndex] = useState(null);
-  const [otpInputs, setOtpInputs] = useState({});
+  const [customAllergy, setCustomAllergy] = useState("");
 
   const [expandedIndex, setExpandedIndex] = useState(null);
   const toggleExpand = (index) => {
@@ -62,8 +60,7 @@ const MedicalInfoForm = () => {
           setFormData((prev) => ({
             ...prev,
             bloodGroup: "",
-            allergies: "",
-            selectedAllergies: [],
+            allergies: [],
             conditions: "",
             medications: "",
             emergencyContact: []
@@ -77,8 +74,7 @@ const MedicalInfoForm = () => {
         setFormData((prev) => ({
           ...prev,
           bloodGroup: data.bloodGroup || prev.bloodGroup,
-          allergies: data.allergies || prev.allergies,
-          selectedAllergies: Array.isArray(data.selectedAllergies) ? data.selectedAllergies : prev.selectedAllergies,
+          allergies: Array.isArray(data.allergies) ? data.allergies : [],
           conditions: data.conditions || prev.conditions,
           medications: data.medications || prev.medications,
           emergencyContact: Array.isArray(data.emergencyContact) ? data.emergencyContact : data.emergencyContact ? [data.emergencyContact] : [],
@@ -104,15 +100,18 @@ const MedicalInfoForm = () => {
   };
   const handleAllergyChange = (e, allergy) => {
     const { checked } = e.target;
-    setFormData((prev) => {
-      const updatedAllergies = checked
-        ? [...new Set([...prev.selectedAllergies, allergy])]
-        : prev.selectedAllergies.filter((item) => item !== allergy);
-      const allergiesString = updatedAllergies.join(", ");
+    setFormData(prev => {
+      // Separate current allergies into common and custom
+      const customAllergies = prev.allergies.filter(a => !commonAllergies.includes(a));
+      let newCommonAllergies;
+      if (checked) {
+        newCommonAllergies = [...prev.allergies.filter(a => commonAllergies.includes(a)), allergy];
+      } else {
+        newCommonAllergies = prev.allergies.filter(a => commonAllergies.includes(a) && a !== allergy);
+      }
       return {
         ...prev,
-        selectedAllergies: updatedAllergies,
-        allergies: allergiesString,
+        allergies: [...newCommonAllergies, ...customAllergies]
       };
     });
   };
@@ -126,13 +125,7 @@ const MedicalInfoForm = () => {
       return;
     }
 
-    if (!Array.isArray(formData.selectedAllergies)) {
-      console.error("selectedAllergies is not an array:", formData.selectedAllergies);
-      toast.error("Error with allergy selection. Please try again.");
-      return;
-    }
-
-    if (formData.selectedAllergies.length === 0 && !formData.allergies) {
+    if (!formData.allergies || formData.allergies.length === 0) {
       toast.error("Please select at least one allergy or enter a custom one.");
       return;
     }
@@ -276,9 +269,23 @@ const MedicalInfoForm = () => {
                   </button>
                   <Input
                     name="allergies"
-                    value={formData.allergies}
-                    onChange={handleChange}
-                    placeholder="Other allergies"
+                    value={formData.allergies.filter(a => !commonAllergies.includes(a)).join(", ")}
+                    onChange={e => {
+                      const customAllergies = e.target.value
+                        .split(",")
+                        .map(a => a.trim())
+                        .filter(a => a && !commonAllergies.includes(a));
+                      setFormData(prev => ({
+                        ...prev,
+                        allergies: [
+                          // Keep all checked common allergies
+                          ...prev.allergies.filter(a => commonAllergies.includes(a)),
+                          // Plus the custom ones from the input
+                          ...customAllergies
+                        ]
+                      }));
+                    }}
+                    placeholder="Other allergies (comma separated)"
                     className="p-3 border shadow-sm focus:ring-2 focus:ring-blue-300 w-full mt-2"
                   />
                 </div>

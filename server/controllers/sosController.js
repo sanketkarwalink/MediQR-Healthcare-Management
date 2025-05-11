@@ -26,7 +26,7 @@ export const sendSOSAlert = async (req, res) => {
         return res.status(400).json({ message: "No emergency contacts found!" });
       }
 
-      const sortedContacts = medicalInfo.emergencyContact.sort((a, b) => a.priority - b.priority).slice(0, 2);
+      const sortedContacts = medicalInfo.emergencyContact.sort((a, b) => a.priority - b.priority);
 
       const contact = sortedContacts[0];
 
@@ -37,16 +37,21 @@ export const sendSOSAlert = async (req, res) => {
       }
       console.log("📞 Emergency contact info:", medicalInfo.emergencyContact);
 
-
       console.log("📤 Sending Whatsapp SOS to:", emergencyPhone);
 
       const message = `🚨 SOS Alert: ${user.name} triggered an emergency!
       📍 Location: https://www.google.com/maps?q=${latitude},${longitude}`;
 
+
       await client.messages.create({
-          body: message,
-          from: process.env.TWILIO_PHONE_NO,
-          to: `whatsapp:${emergencyPhone}`,
+        body: message,
+        from: process.env.TWILIO_WHATSAPP_NO,
+        to: `whatsapp:${emergencyPhone}`,
+      }).then((response) => {
+          console.log('Twilio Response:', response);
+      }).catch((error) => {
+          console.error('Twilio API Error:', error);
+          return res.status(500).json({ message: "Failed to send Whatsapp SOS alert", error: error.message });
       });
 
       console.log("✅ Whatsapp SOS Alert Sent Successfully!");
