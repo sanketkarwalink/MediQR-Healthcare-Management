@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import {
-  Avatar, Box, Button, Divider, Typography, Stack, Paper, Container, Dialog, DialogTitle, DialogActions
+  Avatar, Box, Button, Divider, Typography, Stack, Paper, Container, Dialog, DialogTitle, DialogActions, DialogContent, TextField
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "../context/AuthContext";
@@ -13,14 +13,45 @@ import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, loading } = useContext(AuthContext);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [changePwdOpen, setChangePwdOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [pwdMsg, setPwdMsg] = useState("");
+  const token = localStorage.getItem("token");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setUser(null);
     navigate('/');
   };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwdMsg("");
+    const res = await fetch("http://localhost:5000/api/users/change-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setPwdMsg("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setTimeout(() => setChangePwdOpen(false), 1200);
+    } else {
+      setPwdMsg(data.error || "Error changing password");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner
+  }
 
   if (!user) {
     return (
@@ -58,7 +89,7 @@ const ProfilePage = () => {
         >
           {/* Profile Avatar and Info */}
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-            <Avatar sx={{ width: 100, height: 100, mb: 2, bgcolor: 'primary.main', fontSize: 44 }}>
+            <Avatar src={`http://localhost:5000${user.profilePicture}`} sx={{ width: 100, height: 100, mb: 2, bgcolor: 'primary.main', fontSize: 44 }}>
               {user?.name ? user.name[0].toUpperCase() : <PersonIcon fontSize="inherit" />}
             </Avatar>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>
@@ -72,7 +103,7 @@ const ProfilePage = () => {
               variant="contained"
               startIcon={<AssignmentIndIcon />}
               sx={{ mt: 1, borderRadius: 5, bgcolor: 'primary.main', color: 'whitesmoke', px: 3 }}
-              onClick={() => navigate('/edit-profile')}
+              onClick={() => navigate('/dashboard/edit-profile')}
               disabled={!user}
             >
               Edit Profile
@@ -114,7 +145,7 @@ const ProfilePage = () => {
             <Button
               variant="outlined"
               startIcon={<LockResetIcon />}
-              onClick={() => navigate('/change-password')}
+              onClick={() => setChangePwdOpen(true)}
               sx={{ borderRadius: 5 }}
             >
               Change Password
@@ -179,6 +210,90 @@ const ProfilePage = () => {
               Logout
             </Button>
           </DialogActions>
+        </Dialog>
+
+        {/* Change Password Dialog */}
+        <Dialog
+          open={changePwdOpen}
+          onClose={() => setChangePwdOpen(false)}
+          maxWidth="xs"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              maxWidth: 360,
+              mx: "auto",
+              boxShadow: 8,
+              p: 1,
+              backgroundColor: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(6px)"
+            }
+          }}
+        >
+          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
+            <LockResetIcon color="primary" sx={{ fontSize: 28 }} />
+            Change Password
+          </DialogTitle>
+          <Divider />
+          <DialogContent sx={{ pt: 3 }}>
+            <Box component="form" onSubmit={handleChangePassword} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                label="Current Password"
+                type="password"
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                required
+                autoFocus
+                variant="outlined"
+                fullWidth
+                sx={{
+                  borderRadius: 5,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 8,
+                    background: "#f8fafc"
+                  }
+                }}
+              />
+              <TextField
+                label="New Password"
+                type="password"
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                required
+                helperText="At least 6 characters"
+                variant="outlined"
+                fullWidth
+                sx={{
+                  borderRadius: 5,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 8,
+                    background: "#f8fafc"
+                  }
+                }}
+              />
+              {pwdMsg && (
+                <Typography
+                  sx={{ mb: 1, textAlign: "center" }}
+                  color={pwdMsg.includes("success") ? "success.main" : "error.main"}
+                >
+                  {pwdMsg}
+                </Typography>
+              )}
+              <DialogActions sx={{ justifyContent: "space-between", px: 0 }}>
+                <Button onClick={() => setChangePwdOpen(false)} variant="outlined" color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={!currentPassword || !newPassword}
+                >
+                  Change
+                </Button>
+              </DialogActions>
+            </Box>
+          </DialogContent>
         </Dialog>
       </Container>
     </Box>

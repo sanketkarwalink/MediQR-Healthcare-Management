@@ -14,6 +14,7 @@ import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import MedicalCard from './pages/MedicalCard.jsx';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import EditProfile from './pages/EditProfile.jsx';
 
 const theme = createTheme({
   typography: {
@@ -34,6 +35,7 @@ function App() {
             <Route path="/dashboard/" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="edit-profile" element={<EditProfile />} />
               <Route path="qr-code" element={<QRCodePage />} />
               <Route path="medical-info" element={<MedicalDetails />} />
               <Route path="insurance" element={<InsurancePage />} />

@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Box, Button, Container, Paper, TextField, Typography, Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 const EditProfilePage = () => {
   const { user, setUser } = useContext(AuthContext);
@@ -10,33 +9,57 @@ const EditProfilePage = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : "");
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && !file.type.startsWith("image/")) {
+      alert("Only image files are allowed!");
+      return;
+    }
+    setFile(file);
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     let profilePicUrl = profilePicture;
 
+    // Upload profile picture
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await axios.post("/api/users/upload-profile-picture", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const res = await fetch("http://localhost:5000/api/users/upload-profile-picture", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
-      profilePicUrl = res.data.url;
+      const data = await res.json();
+      profilePicUrl = data.url;
     }
 
     // Update user profile
-    const res = await axios.put("/api/users/update-profile", {
-      name,
-      email,
-      profilePicture: profilePicUrl,
+    const res = await fetch("http://localhost:5000/api/users/update-profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        name,
+        email,
+        profilePicture: profilePicUrl,
+      }),
     });
-
-    setUser(res.data.user);
+    const data = await res.json();
+    setUser(data.user);
     navigate("/dashboard/profile");
   };
 
@@ -47,10 +70,15 @@ const EditProfilePage = () => {
           Edit Profile
         </Typography>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
-          <Avatar src={profilePicture} sx={{ width: 80, height: 80, mb: 2 }} />
+          <Avatar src={preview} sx={{ width: 80, height: 80, mb: 2 }} />
           <Button variant="outlined" component="label">
             Upload Picture
-            <input type="file" hidden accept="image/*" onChange={handleFileChange} />
+            <input
+              type="file"
+              hidden
+              accept="image/png, image/jpeg, image/jpg, image/gif, image/webp"
+              onChange={handleFileChange}
+            />
           </Button>
         </Box>
         <Box component="form" onSubmit={handleSave} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>

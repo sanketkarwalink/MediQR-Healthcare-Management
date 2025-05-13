@@ -18,14 +18,14 @@ const authMiddleware = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("🟢 Decoded Token:", decoded); // ✅ Check what fields exist
+        console.log("🟢 Decoded Token:", decoded);
 
         if (!decoded.id) {
             console.log("🔴 User ID missing in decoded token!");
             return res.status(401).json({ message: "Unauthorized: User ID missing in token." });
         }
 
-        req.user = decoded;  // ✅ Attach decoded user info to `req`
+        req.user = decoded;
         console.log("🟢 Token Verified:", req.user);
         next();
     } catch (error) {

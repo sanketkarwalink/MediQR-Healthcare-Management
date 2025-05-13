@@ -6,6 +6,7 @@ import medicalRoutes from './routes/medicalRoutes.js';
 import authRoutes from "./routes/authRoutes.js";
 import sosRoutes from "./routes/sosRoutes.js";
 import insuranceRoutes from './routes/insuranceRoutes.js'
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -20,6 +21,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/medical', medicalRoutes);
 app.use('/api/', sosRoutes);
 app.use('/api/insurance', insuranceRoutes);
+app.use("/api/users", userRoutes);
+app.use('/uploads', (req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+}, express.static('uploads'));
 
 connect(process.env.MONGO_URI, {
     useNewUrlParser: true,

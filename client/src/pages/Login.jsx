@@ -163,14 +163,14 @@ const Login = () => {
                     <p className="text-center mt-4 text-gray-600">
                         Don't have an account? <span className="text-blue-700 font-semibold cursor-pointer hover:underline" onClick={() => navigate("/register")}>Register</span>
                     </p>
-                    {/* <p className="text-center text-gray-600 mt-2">
+                    <p className="text-center text-gray-600 mt-2">
                         <span
                             className="text-blue-700 font-semibold cursor-pointer hover:underline"
                             onClick={() => navigate("/forgot-password")}
                         >
                             Forgot Password?
                         </span>
-                    </p> */}
+                    </p>
                 </CardContent>
             </Card>
         </div>
