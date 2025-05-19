@@ -9,8 +9,8 @@ html, body, #root {
   align-items: center;
   font-family: "Winki Sans";
 }
-/* body {
-  background: linear-gradient(135deg, #4e7c7e, #6b8f8a, #8fbbd3, #c5d1e6);
+body {
+  background: linear-gradient(135deg, #2c50c5, #79a5f1, #3260bc, #c5d1e6);
   background-size: 300% 300%;
   animation: gradientMove 15s ease infinite;
 }
@@ -19,16 +19,12 @@ html, body, #root {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-} */
+}
 
-body {
+/* body {
   background: linear-gradient(to left, #A7C7E7, #D3A6F1),
               linear-gradient(to right, #A7C7E7, #D3A6F1);
   background-size: 100% 100%;
   background-position: left center, right center;
   height: 100vh;
-}
-
-
-
-
+} */
