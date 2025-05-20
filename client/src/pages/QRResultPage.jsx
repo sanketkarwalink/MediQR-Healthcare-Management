@@ -16,10 +16,11 @@ const QRResultPage = () => {
     useEffect(() => {
       if (!userId) return;
 
-      if(!qrData && userId){
+      if (!qrData && userId) {
         const fetchData = async () => {
           try {
-            const response = await fetch(`http://localhost:5000/api/medical/qr-result/${userId}`);
+            const host = window.location.hostname;
+            const response = await fetch(`http://${host}:5000/api/medical/qr-result/${userId}`);
             if (!response.ok) throw new Error("No data found");
             const data = await response.json();
             setQrData(data);
@@ -27,7 +28,7 @@ const QRResultPage = () => {
             console.error("❌ API Fetch Error:", error.message);
           }
         };
-        if(!qrData){
+        if (!qrData) {
           fetchData();
         }
       }

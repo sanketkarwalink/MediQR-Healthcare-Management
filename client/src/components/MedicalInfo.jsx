@@ -38,7 +38,8 @@ const MedicalInfoForm = () => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/medical/me", {
+      const host = window.location.hostname;
+      const res = await fetch(`http://${host}:5000/api/medical/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -161,7 +162,8 @@ const MedicalInfoForm = () => {
       const token = localStorage.getItem("token");
       console.log("Submitting Data:", JSON.stringify(formData, null, 2));
 
-      const res = await fetch("http://localhost:5000/api/medical/add", {
+      const host = window.location.hostname;
+      const res = await fetch(`http://${host}:5000/api/medical/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

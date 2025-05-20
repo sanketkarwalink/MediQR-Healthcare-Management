@@ -91,9 +91,8 @@ export const getNgrokUrl = async () => {
 
 export const generateQRCode = async (userId) => {
     try {
-        // const ngrokUrl = await getNgrokUrl();
-        // if (!ngrokUrl) throw new Error("Ngrok URL missing");
-        const qrUrl = `http://localhost:5173/qr-result/${userId}`;
+        const ip = process.env.HOST_IP || "localhost";
+        const qrUrl = `http://${ip}:5173/qr-result/${userId}`;
         const qrCodeUrl = await QRCode.toDataURL(qrUrl);
         return qrCodeUrl;
     } catch (err) {

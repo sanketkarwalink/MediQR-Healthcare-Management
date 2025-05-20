@@ -30,7 +30,8 @@ const Dashboard = () => {
     const fetchMedicalInfo = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:5000/api/medical/me", {
+            const host = window.location.hostname;
+            const res = await axios.get(`http://${host}:5000/api/medical/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if(res.data){
@@ -141,12 +142,12 @@ const Dashboard = () => {
             const message = `🚨 SOS Alert! ${user.name} needs help! Last known location: https://maps.google.com/?q=${latitude},${longitude}`;
 
             await axios.post("http://localhost:5000/api/sos", {
-                userId: user.id,
+                userId: user._id,
                 latitude,
                 longitude
             });
 
-            setQrData(`http://localhost:5173/api/medical/qr/${user.id}`);
+            setQrData(`http://localhost:5173/api/medical/qr/${user._id}`);
             speak("SOS alert sent successfully.", "en-US", "female");
             toast.success("🚨 SOS sent to emergency contact!");
         } catch (error) {
@@ -173,7 +174,6 @@ const Dashboard = () => {
 
                 if (transcript.includes("help me") || transcript.includes("emergency") || transcript.includes("sos") || transcript.includes("save me") || transcript.includes("need help") || transcript.includes("emergency help"))  {
                     console.log("⚠️ Detected emergency keyword. Triggering promptConfirmation.");
-                    toast.warn("Emergency Detected, Should we trigger SOS? Say, Confirm/Yes or Cancel")
                     promptConfirmation();
                 } else if (transcript.includes("confirm") || transcript.includes("yes") && confirmationPendingRef.current) {
                         console.log("✅ Confirming SOS...");
@@ -256,7 +256,7 @@ const Dashboard = () => {
 
             {/* Medical Info Form */}
             {showMedicalForm && (
-                <MedicalInfoForm userId={user?.id} onSave={generateQR} />
+                <MedicalInfoForm userId={user?._id} onSave={generateQR} />
             )}
 
             {/* QR Code Display */}
@@ -279,8 +279,9 @@ const Dashboard = () => {
             )}
 
             {showSOSConfirm && (
-                <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 z-50">
-                    <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+                <div className="fixed inset-0 flex items-center justify-center bg-opacity-60 z-50">
+                    <div className="bg-red-100 p-6 rounded-xl shadow-lg flex flex-col items-center">
+                    <p className="text-lg font-semibold mb-4">Emergency Detected!!</p>
                     <p className="text-lg font-semibold mb-4">Do you want to trigger SOS?</p>
                     <div className="flex gap-4">
                         <button

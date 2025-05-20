@@ -83,19 +83,3 @@ const QRScannerPage = () => {
 };
 
 export default QRScannerPage;
-
-// try {
-//   const parsedData = JSON.parse(decodedText);
-//   console.log("🔵 Parsed QR Data (Before Navigating):", parsedData);
-//   const userId = parsedData?.userId;
-//   if (!userId) {
-//     throw new Error("Invalid QR Code: Missing userId");
-//   }
-
-//   console.log("🚀 Navigating with:", { state: { qrData: parsedData } });
-//   scanner.clear();
-//   navigate(`/qr-result/${userId}`, { state: { qrData: parsedData } });
-// } catch (error) {
-//   console.error("❌ Error parsing QR Code:", error.message);
-//   alert("Invalid QR Code. Please scan a valid medical QR.")
-// }

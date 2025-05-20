@@ -112,7 +112,8 @@ router.post("/forgot-password", async (req, res) => {
   user.resetPasswordExpires = Date.now() + 1000 * 60 * 30; // 30 min
   await user.save();
 
-  const resetUrl = `http://localhost:5173/reset-password/${token}`;
+  const host = req.headers.origin || `http://${req.hostname}:5173`;
+  const resetUrl = `${process.env.FRONTEND_HOST}/reset-password/${token}`;
   try {
     await transporter.sendMail({
       to: user.email,

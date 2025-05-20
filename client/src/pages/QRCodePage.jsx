@@ -10,7 +10,8 @@ const QRCodePage = () => {
       if (!token) return console.error("No token found");
 
       try {
-        const res = await fetch("http://localhost:5000/api/medical/qr", {
+        const host = window.location.hostname;
+        const res = await fetch(`http://${host}:5000/api/medical/qr`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
