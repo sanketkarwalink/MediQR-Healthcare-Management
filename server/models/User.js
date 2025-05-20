@@ -9,7 +9,9 @@ const UserSchema = new mongoose.Schema(
         profilePicture: String,
         resetToken: String,
         resetTokenExpiry: Date,
-        googleId: String
+        googleId: String,
+        resetPasswordToken: String,
+        resetPasswordExpires: Date,
     },
     { timestamps: true }
 );

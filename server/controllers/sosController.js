@@ -2,10 +2,21 @@ import Twilio from "twilio";
 import dotenv from "dotenv";
 import User from "../models/User.js";
 import MedicalData from "../models/MedicalData.js";
+import insuranceSchema from "../models/insuranceSchema.js";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
 const client = new Twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+
+// Setup transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
 export const sendSOSAlert = async (req, res) => {
   try {
@@ -21,6 +32,7 @@ export const sendSOSAlert = async (req, res) => {
       }
 
       const medicalInfo = await MedicalData.findOne({ userId });
+      const insuranceInfo = await insuranceSchema.findOne({ userId });
 
       if (!medicalInfo || !medicalInfo.emergencyContact?.length) {
         return res.status(400).json({ message: "No emergency contacts found!" });
@@ -55,6 +67,25 @@ export const sendSOSAlert = async (req, res) => {
       });
 
       console.log("✅ Whatsapp SOS Alert Sent Successfully!");
+
+      if (insuranceInfo && insuranceInfo.email) {
+        await transporter.sendMail({
+          to: insuranceInfo.email,
+          subject: "SOS Alert: Immediate Attention Needed",
+          text: `🚨 SOS Alert for ${user.name}!\nLocation: https://maps.google.com/?q=${latitude},${longitude}\nContact: ${insuranceInfo.emergencyContact}`,
+        });
+      }
+
+      // Send to emergency contact (if email exists)
+      const emergencyEmail = contact.email; // assuming your contact object has an email field
+      if (emergencyEmail) {
+        await transporter.sendMail({
+          to: emergencyEmail,
+          subject: "SOS Alert: Immediate Attention Needed",
+          text: `🚨 SOS Alert for ${user.name}!\nLocation: https://maps.google.com/?q=${latitude},${longitude}\nContact: ${contact.phone}`,
+        });
+      }
+
       return res.status(200).json({ message: "Whatsapp SOS alert sent successfully" });
 
   } catch (error) {

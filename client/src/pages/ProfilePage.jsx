@@ -153,7 +153,7 @@ const ProfilePage = () => {
             <Button
               variant="outlined"
               startIcon={<LockResetIcon />}
-              onClick={() => navigate('/forgot-password')}
+              onClick={() => navigate('/dashboard/forgot-password')}
               sx={{ borderRadius: 5 }}
             >
               Forgot Password

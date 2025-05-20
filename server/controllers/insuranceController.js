@@ -30,7 +30,7 @@ export const getInsuranceInfo = async (req, res) => {
  */
 export const updateInsuranceInfo = async (req, res) => {
   try {
-    const { provider, policyNumber, policyHolder, expiryDate, emergencyContact } = req.body;
+    const { provider, policyNumber, policyHolder, expiryDate, emergencyContact , email } = req.body;
     console.log("Received insurance data:", req.body);
 
     if (!req.user?.id) {
@@ -48,6 +48,8 @@ export const updateInsuranceInfo = async (req, res) => {
     if (policyNumber !== undefined) insuranceData.policyNumber = policyNumber;
     if (policyHolder !== undefined) insuranceData.policyHolder = policyHolder;
     if (emergencyContact !== undefined) insuranceData.emergencyContact = emergencyContact;
+    if (email !== undefined) insuranceData.email = email;
+
 
     if (expiryDate) {
       const parsedDate = new Date(expiryDate);

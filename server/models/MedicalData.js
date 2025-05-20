@@ -3,6 +3,7 @@ import { Schema, model } from "mongoose";
 const EmergencyContactSchema = new Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
+    email: { type: String, required: false },
     relation: { type: String, required: true },
     city: { type: String },
     priority: { type: Number, default: 1 },

@@ -17,6 +17,8 @@ const Dashboard = () => {
     const [showPopUp, setShowPopUp] = useState("");
     const [showMedicalForm, setShowMedicalForm] = useState(false);
     const [medicalInfo, setMedicalInfo] = useState(null);
+    const [showSOSConfirm, setShowSOSConfirm] = useState(false);
+    const [showEmergencyPopup, setShowEmergencyPopup] = useState(false);
     const sosSound = useRef(new Audio("/alert-85101.mp3"));
     const recognitionRef = useRef(null);
     const confirmationPendingRef = useRef(false);
@@ -42,7 +44,7 @@ const Dashboard = () => {
     const generateQR = async (updatedMedicalInfo) => {
         try {
             const res = await axios.post("http://localhost:5000/api/medical/generate-qr", {
-                userId: user?.id,
+                userId: user?._id,
                 ...updatedMedicalInfo,
             });
             setQrData(res.data.qrCodePath);
@@ -97,10 +99,8 @@ const Dashboard = () => {
 
     const promptConfirmation = () => {
         confirmationPendingRef.current = true;
-
+        setShowSOSConfirm(true);
         speak("Did you mean to trigger SOS? Say Confirm or Cancel.", "en-US", "female");
-        // speak("क्या आप आपातकालीन सहायता सक्रिय करना चाहते हैं? 'Confirm' या 'Cancel' कहें।", "hi-IN", "male");
-
     };
 
     const activateSOS = async () => {
@@ -167,15 +167,15 @@ const Dashboard = () => {
             recognitionRef.current.lang = "en-US";
 
             recognitionRef.current.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();;
                 console.log("🗣️ Heard:", transcript);
                 console.log("confirmationPending:", confirmationPendingRef.current);
 
-                if (transcript.includes("help me") || transcript.includes("emergency")) {
+                if (transcript.includes("help me") || transcript.includes("emergency") || transcript.includes("sos") || transcript.includes("save me") || transcript.includes("need help") || transcript.includes("emergency help"))  {
                     console.log("⚠️ Detected emergency keyword. Triggering promptConfirmation.");
-                    toast.warn("Emergency Detected, Should we trigger SOS? Say, Confirm or Cancel")
+                    toast.warn("Emergency Detected, Should we trigger SOS? Say, Confirm/Yes or Cancel")
                     promptConfirmation();
-                } else if (transcript.includes("confirm") && confirmationPendingRef.current) {
+                } else if (transcript.includes("confirm") || transcript.includes("yes") && confirmationPendingRef.current) {
                         console.log("✅ Confirming SOS...");
                         confirmationPendingRef.current = false;
                         activateSOS();
@@ -189,6 +189,9 @@ const Dashboard = () => {
             recognitionRef.current.onerror = (event) => {
                 console.error("Speech recognition error:", event.error);
                 toast.error(`❌ Speech recognition error: ${event.error}`);
+            };
+            recognitionRef.current.onend = () => {
+                recognitionRef.current.start();
             };
         }
 
@@ -230,12 +233,20 @@ const Dashboard = () => {
                     <FaClipboardList size={26} className="text-green-600" />
                     <p className="mt-2 text-sm font-semibold">Medical Profile</p>
                 </Card>
-                <Card className="p-4 flex flex-col items-center rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105">
+                <Card className="p-4 flex flex-col items-center rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-gray-300 hover:scale-105"
+                onClick={() => {
+                        if (!medicalInfo.emergencyContact) {
+                            handleCard("/dashboard/medical-info", "Emergency Contact Required to Access this setting");
+                        } else {
+                            navigate("/dashboard/emergency-settings");
+                        }
+                }}>
                     <FaHospital size={26} className="text-gray-700" />
-                    <p className="mt-2 text-sm font-semibold">Emergency Services</p>
+                    <p className="mt-2 text-sm font-semibold">Emergency Settings</p>
                 </Card>
                 <Card className="p-4 flex flex-col items-center bg-red-50/75 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all border border-red-400 hover:scale-105"
                 onClick={() => {
+                    promptConfirmation();
                     toast.warn("Do you want to trigger SOS? If yes, either say help me or Emergency")
                 }}>
                     <FaExclamationTriangle size={26} className="text-red-600" />
@@ -266,8 +277,38 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+
+            {showSOSConfirm && (
+                <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-lg flex flex-col items-center">
+                    <p className="text-lg font-semibold mb-4">Do you want to trigger SOS?</p>
+                    <div className="flex gap-4">
+                        <button
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                        onClick={() => {
+                            setShowSOSConfirm(false);
+                            confirmationPendingRef.current = false;
+                            activateSOS();
+                        }}
+                        >
+                        Confirm
+                        </button>
+                        <button
+                        className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
+                        onClick={() => {
+                            setShowSOSConfirm(false);
+                            confirmationPendingRef.current = false;
+                            speak("SOS request canceled.");
+                        }}
+                        >
+                        Cancel
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            )}
         </div>
-    );
-};
+    )
+}
 
 export default Dashboard;

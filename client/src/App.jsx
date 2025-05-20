@@ -15,6 +15,9 @@ import "react-toastify/dist/ReactToastify.css";
 import MedicalCard from './pages/MedicalCard.jsx';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import EditProfile from './pages/EditProfile.jsx';
+import ResetPassword from './pages/ResetPass.jsx';
+import ForgotPassword from './pages/ForgotPass.jsx';
+import EmergencySettings from './pages/emergency.jsx';
 
 const theme = createTheme({
   typography: {
@@ -36,9 +39,12 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="profile" element={<Profile />} />
               <Route path="edit-profile" element={<EditProfile />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:token" element={<ResetPassword />} />
               <Route path="qr-code" element={<QRCodePage />} />
               <Route path="medical-info" element={<MedicalDetails />} />
               <Route path="insurance" element={<InsurancePage />} />
+              <Route path="emergency-settings" element={<EmergencySettings />} />
             </Route>
           </Routes>
         </Router>

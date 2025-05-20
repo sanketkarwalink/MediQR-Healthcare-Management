@@ -20,10 +20,8 @@ const MedicalInfoForm = () => {
     allergies: [],
     conditions: "",
     medications: "",
-    emergencyContact:[{ name: "", phone: "", relation: "", city: "", priority: "" }],
+    emergencyContact:[{ name: "", email:"", phone: "", relation: "", city: "", priority: "" }],
   });
-  const [customAllergy, setCustomAllergy] = useState("");
-
   const [expandedIndex, setExpandedIndex] = useState(null);
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -101,7 +99,6 @@ const MedicalInfoForm = () => {
   const handleAllergyChange = (e, allergy) => {
     const { checked } = e.target;
     setFormData(prev => {
-      // Separate current allergies into common and custom
       const customAllergies = prev.allergies.filter(a => !commonAllergies.includes(a));
       let newCommonAllergies;
       if (checked) {
@@ -140,7 +137,7 @@ const MedicalInfoForm = () => {
       return;
     }
 
-    setStep(2); // Move to next step
+    setStep(2);
     console.log("Step changed to 2");
   };
 
@@ -194,7 +191,7 @@ const MedicalInfoForm = () => {
       ...prev,
       emergencyContact: [
         ...prev.emergencyContact,
-        { name: '', phone: '', relation: '', city: '', priority: '' }
+        { name: '', email: '', phone: '', relation: '', city: '', priority: '' }
       ]
     }));
   };
@@ -354,6 +351,12 @@ const MedicalInfoForm = () => {
                         value={contact.name}
                         onChange={handleEmergencyContactChange(index)}
                         placeholder="Contact Name"
+                      />
+                      <Input
+                        name={`emergencyContact[${index}].email`}
+                        value={contact.email}
+                        onChange={handleEmergencyContactChange(index)}
+                        placeholder="Contact Email address"
                       />
                       <Input
                         name={`emergencyContact[${index}].phone`}

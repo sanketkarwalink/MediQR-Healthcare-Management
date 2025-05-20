@@ -10,6 +10,7 @@ function InsurancePage() {
     policyHolder: '',
     expiryDate: '',
     emergencyContact: '',
+    email: '', // Added email field
   });
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ function InsurancePage() {
       try {
         const response = await axios.get('/api/insurance/me', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Add token here
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
         const fetchedData = response.data;
@@ -32,6 +33,7 @@ function InsurancePage() {
           policyHolder: fetchedData.policyHolder || '',
           expiryDate: formattedExpiryDate,
           emergencyContact: fetchedData.emergencyContact || '',
+          email: fetchedData.email || '', // Set email
         });
         setLoading(false);
       } catch (error) {
@@ -43,7 +45,8 @@ function InsurancePage() {
     fetchInsuranceData();
   }, []);
 
-  const isComplete = insuranceData.provider && insuranceData.policyNumber && insuranceData.expiryDate && insuranceData.emergencyContact;
+  // Make email mandatory for completeness
+  const isComplete = insuranceData.provider && insuranceData.policyNumber && insuranceData.expiryDate && insuranceData.emergencyContact && insuranceData.email;
 
   const handleChange = (e) => {
     setInsuranceData({ ...insuranceData, [e.target.name]: e.target.value });
@@ -84,7 +87,7 @@ function InsurancePage() {
           <p><strong>Policy Number:</strong> {insuranceData.policyNumber || 'Not provided'}</p>
           <p><strong>Policy Holder:</strong> {insuranceData.policyHolder || 'Not provided'}</p>
           <p><strong>Expiry Date:</strong> {insuranceData.expiryDate || 'Not provided'}</p>
-          {/* <p><strong>Emergency Contact:</strong> {insuranceData.emergencyContact || 'Not provided'}</p> */}
+          <p><strong>Email:</strong> {insuranceData.email || 'Not provided'}</p>
           <p>
             <strong>Emergency Contact:</strong>{' '}
             📞
@@ -149,6 +152,15 @@ function InsurancePage() {
             value={insuranceData.emergencyContact}
             onChange={handleChange}
             className="p-2 border rounded"
+          />
+          <Input
+            type="email"
+            name="email"
+            placeholder="Insurance Email"
+            value={insuranceData.email}
+            onChange={handleChange}
+            className="p-2 border rounded"
+            required
           />
 
           <div className="flex gap-2 mt-4">
