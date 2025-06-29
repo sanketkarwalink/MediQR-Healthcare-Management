@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import Card from './Card';
 import CardContent from './CardContent';
 import Input from "./Input";
@@ -8,6 +7,7 @@ import Label from "./Label";
 import { toast } from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from "framer-motion";
+import api from '../services/api.js';
 
 const commonAllergies = ["Peanuts", "Dairy", "Gluten", "Seafood", "Soy", "Eggs", "Shellfish"];
 
@@ -32,54 +32,43 @@ const MedicalInfoForm = () => {
   }, []);
 
   const fetchMedicalInfo = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("No token found, user is not authenticated.");
-      return;
-    }
     try {
-      const host = window.location.hostname;
-      const res = await fetch(`http://${host}:5000/api/medical/me`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-      if (res.status === 401) {
+      const res = await api.get("/api/medical/me");
+      
+      const data = res.data;
+      if (data) {
+        setFormData({
+          bloodGroup: data.bloodGroup || "",
+          allergies: data.allergies || [],
+          conditions: data.conditions || "",
+          medications: data.medications || "",
+          emergencyContact: data.emergencyContact?.length 
+            ? data.emergencyContact 
+            : [{ name: "", email: "", phone: "", relation: "", city: "", priority: "" }]
+        });
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
         localStorage.removeItem("token");
         toast.error("Session Expired! Try logging in again");
         console.error("Unauthorized: Invalid token or session expired.");
         navigate('/');
         return;
       }
-      if (!res.ok) {
-        if (res.status === 404) {
-          console.warn("Medical info not found. The user might be new.");
-          setFormData((prev) => ({
-            ...prev,
-            bloodGroup: "",
-            allergies: [],
-            conditions: "",
-            medications: "",
-            emergencyContact: []
-        }));
-          return;
-        }
-        throw new Error(`Error ${res.status}: ${res.statusText}`);
-      }
-
-      const data = await res.json();
+      if (error.response?.status === 404) {
+        console.warn("Medical info not found. The user might be new.");
         setFormData((prev) => ({
           ...prev,
-          bloodGroup: data.bloodGroup || prev.bloodGroup,
-          allergies: Array.isArray(data.allergies) ? data.allergies : [],
-          conditions: data.conditions || prev.conditions,
-          medications: data.medications || prev.medications,
-          emergencyContact: Array.isArray(data.emergencyContact) ? data.emergencyContact : data.emergencyContact ? [data.emergencyContact] : [],
+          bloodGroup: "",
+          allergies: [],
+          conditions: "",
+          medications: "",
+          emergencyContact: []
         }));
-    } catch (err) {
-      console.error("Error fetching medical info:", err);
+        return;
+      }
+      console.error("Error fetching medical info:", error);
+      toast.error("Failed to load medical information");
     }
   };
 
@@ -159,32 +148,17 @@ const MedicalInfoForm = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       console.log("Submitting Data:", JSON.stringify(formData, null, 2));
 
-      const host = window.location.hostname;
-      const res = await fetch(`http://${host}:5000/api/medical/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const responseData = await res.json();
-      console.log("API Response:", responseData);
-
-      if (!res.ok) {
-        console.error("Submission failed:", responseData);
-        throw new Error(responseData.message || "Failed to submit");
-      }
+      const res = await api.post("/api/medical/add", formData);
+      console.log("API Response:", res.data);
 
       toast.success("Medical info updated!");
       navigate("/dashboard");
     } catch (err) {
       console.error("Error submitting:", err);
-      toast.error(err.message || "Failed to update medical info");
+      const errorMessage = err.response?.data?.message || err.message || "Failed to update medical info";
+      toast.error(errorMessage);
     }
   };
 

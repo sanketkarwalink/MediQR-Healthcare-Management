@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
+import api from '../services/api.js';
 
 export const AuthContext = createContext();
 
@@ -17,12 +18,9 @@ export const AuthProvider = ({ children }) => {
                     setLoading(false);
                     return;
                 }
-                fetch("http://localhost:5000/api/users/me", {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        setUser(data.user || null);
+                api.get("/api/users/me")
+                    .then(res => {
+                        setUser(res.data.user || null);
                         setLoading(false);
                     })
                     .catch(() => {

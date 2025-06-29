@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import * as QRCode from "qrcode.react";
 import { AuthContext } from "../context/AuthContext";
 import MedicalInfoForm from "../components/MedicalInfo";
@@ -8,6 +7,7 @@ import { FaHospital, FaQrcode, FaBell, FaExclamationTriangle, FaClipboardList, F
 import Card from "../components/Card";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from '../services/api.js';
 
 
 const Dashboard = () => {
@@ -29,11 +29,7 @@ const Dashboard = () => {
 
     const fetchMedicalInfo = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const host = window.location.hostname;
-            const res = await axios.get(`http://${host}:5000/api/medical/me`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await api.get("/api/medical/me");
             if(res.data){
                 setMedicalInfo(res.data);
             }
@@ -44,7 +40,7 @@ const Dashboard = () => {
 
     const generateQR = async (updatedMedicalInfo) => {
         try {
-            const res = await axios.post("http://localhost:5000/api/medical/generate-qr", {
+            const res = await api.post("/api/medical/generate-qr", {
                 userId: user?._id,
                 ...updatedMedicalInfo,
             });
@@ -141,13 +137,14 @@ const Dashboard = () => {
             const emergencyContacts = medicalInfo?.emergencyContact || [];
             const message = `🚨 SOS Alert! ${user.name} needs help! Last known location: https://maps.google.com/?q=${latitude},${longitude}`;
 
-            await axios.post("http://localhost:5000/api/sos", {
+            await api.post("/api/sos", {
                 userId: user._id,
                 latitude,
                 longitude
             });
 
-            setQrData(`http://localhost:5173/api/medical/qr/${user._id}`);
+            const host = window.location.hostname;
+            setQrData(`http://${host}:5173/api/medical/qr/${user._id}`);
             speak("SOS alert sent successfully.", "en-US", "female");
             toast.success("🚨 SOS sent to emergency contact!");
         } catch (error) {

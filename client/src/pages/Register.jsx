@@ -4,9 +4,9 @@ import CardContent from "../components/CardContent";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Label from "../components/Label";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import api from '../services/api.js';
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -18,7 +18,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5000/api/auth/register", { name, email, password });
+            const res = await api.post("/api/auth/register", { name, email, password });
             localStorage.setItem("token", res.data.token);
             setUser(res.data.user);
             navigate("/dashboard");

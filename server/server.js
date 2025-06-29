@@ -11,7 +11,18 @@ import userRoutes from "./routes/userRoutes.js";
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://192.168.83.128:5173"],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost and any IP in development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/)) {
+      return callback(null, true);
+    }
+    
+    // In production, you can be more restrictive
+    return callback(null, true);
+  },
   credentials: true,
   methods: 'GET,POST,PUT,DELETE'
 }));

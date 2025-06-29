@@ -9,7 +9,7 @@ const EditProfilePage = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(user?.profilePicture ? `http://localhost:5000${user.profilePicture}` : "");
+  const [preview, setPreview] = useState(user?.profilePicture ? `http://${window.location.hostname}:5000${user.profilePicture}` : "");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -33,7 +33,8 @@ const EditProfilePage = () => {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const res = await fetch("http://localhost:5000/api/users/upload-profile-picture", {
+      const host = window.location.hostname;
+      const res = await fetch(`http://${host}:5000/api/users/upload-profile-picture`, {
         method: "POST",
         body: formData,
         headers: {
@@ -45,7 +46,8 @@ const EditProfilePage = () => {
     }
 
     // Update user profile
-    const res = await fetch("http://localhost:5000/api/users/update-profile", {
+    const host = window.location.hostname;
+    const res = await fetch(`http://${host}:5000/api/users/update-profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

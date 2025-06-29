@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import MedicalCard from "./MedicalCard";
+import api from '../services/api.js';
 
 const QRResultPage = () => {
     const location = useLocation();
@@ -19,13 +20,10 @@ const QRResultPage = () => {
       if (!qrData && userId) {
         const fetchData = async () => {
           try {
-            const host = window.location.hostname;
-            const response = await fetch(`http://${host}:5000/api/medical/qr-result/${userId}`);
-            if (!response.ok) throw new Error("No data found");
-            const data = await response.json();
-            setQrData(data);
+            const response = await api.get(`/api/medical/qr-result/${userId}`);
+            setQrData(response.data);
           } catch (error) {
-            console.error("❌ API Fetch Error:", error.message);
+            console.error("❌ API Fetch Error:", error.response?.data?.message || error.message);
           }
         };
         if (!qrData) {

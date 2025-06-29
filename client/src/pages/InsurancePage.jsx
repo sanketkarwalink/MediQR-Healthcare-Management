@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from "react-hot-toast";
 import Input from '../components/Input';
+import api from '../services/api.js';
 
 function InsurancePage() {
   const [insuranceData, setInsuranceData] = useState({
@@ -18,11 +18,7 @@ function InsurancePage() {
   useEffect(() => {
     const fetchInsuranceData = async () => {
       try {
-        const response = await axios.get('/api/insurance/me', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
+        const response = await api.get('/api/insurance/me');
         const fetchedData = response.data;
         const formattedExpiryDate = fetchedData.expiryDate
           ? new Date(fetchedData.expiryDate).toISOString().split('T')[0]
@@ -54,11 +50,7 @@ function InsurancePage() {
 
   const handleSave = async () => {
     try {
-      await axios.post('/api/insurance/update', insuranceData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      await api.post('/api/insurance/update', insuranceData);
       setEditing(false);
       toast('Insurance info saved successfully!');
     } catch (error) {

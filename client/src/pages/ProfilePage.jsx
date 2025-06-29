@@ -30,7 +30,8 @@ const ProfilePage = () => {
   const handleChangePassword = async (e) => {
     e.preventDefault();
     setPwdMsg("");
-    const res = await fetch("http://localhost:5000/api/users/change-password", {
+    const host = window.location.hostname;
+    const res = await fetch(`http://${host}:5000/api/users/change-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +90,7 @@ const ProfilePage = () => {
         >
           {/* Profile Avatar and Info */}
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-            <Avatar src={`http://localhost:5000${user.profilePicture}`} sx={{ width: 100, height: 100, mb: 2, bgcolor: 'primary.main', fontSize: 44 }}>
+            <Avatar src={user?.profilePicture ? `http://${window.location.hostname}:5000${user.profilePicture}` : ""} sx={{ width: 100, height: 100, mb: 2, bgcolor: 'primary.main', fontSize: 44 }}>
               {user?.name ? user.name[0].toUpperCase() : <PersonIcon fontSize="inherit" />}
             </Avatar>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 0.5 }}>

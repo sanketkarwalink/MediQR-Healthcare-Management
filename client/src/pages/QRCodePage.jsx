@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from '../services/api.js';
 
 const QRCodePage = () => {
   const [qrData, setQrData] = useState("");
@@ -6,23 +7,10 @@ const QRCodePage = () => {
 
   useEffect(() => {
     const fetchQRData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return console.error("No token found");
-
       try {
-        const host = window.location.hostname;
-        const res = await fetch(`http://${host}:5000/api/medical/qr`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await res.json();
-        console.log("🔵 Fetched QR Data:", data); // Debugging
-        if (res.ok) {
-          setQrData(data.qrCodeUrl);
-        } else {
-          console.error("Failed to fetch QR data:", data.error);
-        }
+        const res = await api.get("/api/medical/qr");
+        console.log("🔵 Fetched QR Data:", res.data); // Debugging
+        setQrData(res.data.qrCodeUrl);
       } catch (error) {
         console.error("Error fetching QR data:", error);
       } finally {

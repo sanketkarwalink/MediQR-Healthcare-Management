@@ -4,7 +4,7 @@ import CardContent from "../components/CardContent";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import Label from "../components/Label";
-import axios from "axios";
+import api from '../services/api.js';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
+            const res = await api.post("/api/auth/forgot-password", { email });
             setMessage(res.data.message);
         } catch (err) {
             setError(err.response?.data?.message || "Something went wrong. Try again.");

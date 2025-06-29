@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import api from '../services/api.js';
 import { FaHospital, FaQrcode, FaBell, FaExclamationTriangle, FaClipboardList } from "react-icons/fa";
 import Card from "../components/Card";
 
@@ -15,10 +15,7 @@ const Dashboard = () => {
 
     const fetchMedicalInfo = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:5000/api/medical/me", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await api.get("/api/medical/me");
             setMedicalInfo(res.data);
         } catch (error) {
             console.error("Error fetching medical info", error);
