@@ -19,6 +19,7 @@ const Dashboard = () => {
     const [medicalInfo, setMedicalInfo] = useState(null);
     const [showSOSConfirm, setShowSOSConfirm] = useState(false);
     const [showEmergencyPopup, setShowEmergencyPopup] = useState(false);
+    const [sosActivated, setSosActivated] = useState(false); // Track if SOS was recently activated
     const sosSound = useRef(new Audio("/alert-85101.mp3"));
     const recognitionRef = useRef(null);
     const confirmationPendingRef = useRef(false);
@@ -101,9 +102,13 @@ const Dashboard = () => {
     };
 
     const activateSOS = async () => {
+        setSosActivated(true); // Mark SOS as activated to prevent re-triggering
+        setShowSOSConfirm(false); // Hide confirmation dialog
+        confirmationPendingRef.current = false; // Clear confirmation state
+        
         sosSound.current.play().catch(err => console.error("Audio play error:", err));
 
-        speak("SOS activated. Help is on the way.", "en-US", "female");
+        speak("SOS activated. Alerts sent successfully.", "en-US", "female");
 
         if (medicalInfo) {
             navigate("/dashboard/qr-code");
@@ -112,7 +117,7 @@ const Dashboard = () => {
         }
 
         if (!navigator.geolocation) {
-            speak("Geolocation not supported. Sending SOS without location.", "en-US", "female");
+            speak("Geolocation not supported. Sending alerts without location.", "en-US", "female");
             sendSOS(null, null);
             return;
         }
@@ -125,10 +130,15 @@ const Dashboard = () => {
             },
             (error) => {
                 console.error("Geolocation error:", error);
-                speak("Unable to fetch location. Sending SOS without location.", "en-US", "female");
+                speak("Unable to fetch location. Sending alerts without location.", "en-US", "female");
                 sendSOS(null, null);
             }
         );
+        
+        // Reset SOS activated state after 30 seconds to allow future activations
+        setTimeout(() => {
+            setSosActivated(false);
+        }, 30000);
     };
 
     const sendSOS = async (latitude, longitude) => {
@@ -145,11 +155,11 @@ const Dashboard = () => {
 
             const host = window.location.hostname;
             setQrData(`http://${host}:5173/api/medical/qr/${user._id}`);
-            speak("SOS alert sent successfully.", "en-US", "female");
-            toast.success("🚨 SOS sent to emergency contact!");
+            speak("Emergency alerts sent to contacts and insurance provider.", "en-US", "female");
+            toast.success("🚨 Emergency alerts sent successfully!");
         } catch (error) {
             console.error("Error triggering SOS:", error);
-            speak("SOS activation failed. Please try again.", "en-US", "female");
+            speak("Alert activation failed. Please try again.", "en-US", "female");
         }
     };
 
@@ -168,18 +178,29 @@ const Dashboard = () => {
                 const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();;
                 console.log("🗣️ Heard:", transcript);
                 console.log("confirmationPending:", confirmationPendingRef.current);
+                console.log("sosActivated:", sosActivated);
+
+                // If SOS was recently activated, ignore emergency keywords to prevent loops
+                if (sosActivated) {
+                    console.log("🔇 Ignoring voice commands - SOS recently activated");
+                    return;
+                }
 
                 if (transcript.includes("help me") || transcript.includes("emergency") || transcript.includes("sos") || transcript.includes("save me") || transcript.includes("need help") || transcript.includes("emergency help"))  {
-                    console.log("⚠️ Detected emergency keyword. Triggering promptConfirmation.");
-                    promptConfirmation();
-                } else if (transcript.includes("confirm") || transcript.includes("yes") && confirmationPendingRef.current) {
+                    if (!confirmationPendingRef.current) { // Only trigger if not already pending
+                        console.log("⚠️ Detected emergency keyword. Triggering promptConfirmation.");
+                        promptConfirmation();
+                    }
+                } else if ((transcript.includes("confirm") || transcript.includes("yes")) && confirmationPendingRef.current) {
                         console.log("✅ Confirming SOS...");
                         confirmationPendingRef.current = false;
+                        setShowSOSConfirm(false);
                         activateSOS();
-                } else if (transcript.includes("cancel")) {
+                } else if (transcript.includes("cancel") && confirmationPendingRef.current) {
                     console.log("❌ Cancelling SOS...");
                     confirmationPendingRef.current = false;
-                    speak("SOS request canceled.");
+                    setShowSOSConfirm(false);
+                    speak("Emergency request canceled.");
                 }
             };
 

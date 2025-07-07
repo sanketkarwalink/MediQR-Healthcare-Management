@@ -46,7 +46,11 @@ const ProfilePage = () => {
       setNewPassword("");
       setTimeout(() => setChangePwdOpen(false), 1200);
     } else {
-      setPwdMsg(data.error || "Error changing password");
+      if (data.isGoogleUser) {
+        setPwdMsg("This account uses Google authentication. You cannot change your password here.");
+      } else {
+        setPwdMsg(data.error || "Error changing password");
+      }
     }
   };
 
@@ -99,6 +103,9 @@ const ProfilePage = () => {
             <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
               {user?.email || "No email"}
             </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              {user?.phone || "No phone number"}
+            </Typography>
             <Button
               size="small"
               variant="contained"
@@ -143,22 +150,34 @@ const ProfilePage = () => {
             Security
           </Typography>
           <Stack spacing={2}>
-            <Button
-              variant="outlined"
-              startIcon={<LockResetIcon />}
-              onClick={() => setChangePwdOpen(true)}
-              sx={{ borderRadius: 5 }}
-            >
-              Change Password
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<LockResetIcon />}
-              onClick={() => navigate('/dashboard/forgot-password')}
-              sx={{ borderRadius: 5 }}
-            >
-              Forgot Password
-            </Button>
+            {/* Only show password options for non-Google users */}
+            {!user?.googleId && (
+              <>
+                <Button
+                  variant="outlined"
+                  startIcon={<LockResetIcon />}
+                  onClick={() => setChangePwdOpen(true)}
+                  sx={{ borderRadius: 5 }}
+                >
+                  Change Password
+                </Button>
+                <Button
+                  variant="outlined"
+                  startIcon={<LockResetIcon />}
+                  onClick={() => navigate('/forgot-password')}
+                  sx={{ borderRadius: 5 }}
+                >
+                  Forgot Password
+                </Button>
+              </>
+            )}
+            {/* Show Google info for Google users */}
+            {user?.googleId && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                <p className="text-blue-800 text-sm font-medium mb-1">Google Account</p>
+                <p className="text-blue-600 text-xs">You signed in with Google. Password management is handled by Google.</p>
+              </div>
+            )}
             <Button
               variant="contained"
               color="error"

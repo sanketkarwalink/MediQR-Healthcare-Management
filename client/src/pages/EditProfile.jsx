@@ -7,6 +7,7 @@ const EditProfilePage = () => {
   const { user, setUser } = useContext(AuthContext);
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(user?.profilePicture ? `http://${window.location.hostname}:5000${user.profilePicture}` : "");
@@ -57,6 +58,7 @@ const EditProfilePage = () => {
       body: JSON.stringify({
         name,
         email,
+        phone,
         profilePicture: profilePicUrl,
       }),
     });
@@ -98,6 +100,14 @@ const EditProfilePage = () => {
             required
             fullWidth
             type="email"
+          />
+          <TextField
+            label="Phone Number"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            fullWidth
+            type="tel"
+            placeholder="Enter your phone number"
           />
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
             <Button variant="outlined" fullWidth onClick={() => navigate("/dashboard/profile")}>

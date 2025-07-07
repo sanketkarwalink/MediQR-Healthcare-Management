@@ -6,7 +6,7 @@ const EmergencyContactSchema = new Schema({
     email: { type: String, required: false },
     relation: { type: String, required: true },
     city: { type: String },
-    priority: { type: Number, default: 1 },
+    priority: { type: Number, default: 1 }
 }, { _id: false });
 
 const MedicalDataSchema = new Schema({

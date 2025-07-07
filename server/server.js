@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import sosRoutes from "./routes/sosRoutes.js";
 import insuranceRoutes from './routes/insuranceRoutes.js'
 import userRoutes from "./routes/userRoutes.js";
+import pushRoutes from "./routes/pushRoutes.js";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/medical', medicalRoutes);
 app.use('/api/', sosRoutes);
 app.use('/api/insurance', insuranceRoutes);
 app.use("/api/users", userRoutes);
+app.use('/api/push', pushRoutes);
 app.use('/uploads', (req, res, next) => {
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
   next();

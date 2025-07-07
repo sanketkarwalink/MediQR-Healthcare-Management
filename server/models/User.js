@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema(
     {
         name: String,
         email: { type: String, required: true, unique: true },
+        phone: String,
         password: { type: String },
         profilePicture: String,
         resetToken: String,
@@ -12,6 +13,13 @@ const UserSchema = new mongoose.Schema(
         googleId: String,
         resetPasswordToken: String,
         resetPasswordExpires: Date,
+        pushSubscription: {
+            endpoint: String,
+            keys: {
+                p256dh: String,
+                auth: String
+            }
+        }
     },
     { timestamps: true }
 );

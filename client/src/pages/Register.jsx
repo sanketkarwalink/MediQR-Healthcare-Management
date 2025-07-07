@@ -11,6 +11,7 @@ import api from '../services/api.js';
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const res = await api.post("/api/auth/register", { name, email, password });
+            const res = await api.post("/api/auth/register", { name, email, phone, password });
             localStorage.setItem("token", res.data.token);
             setUser(res.data.user);
             navigate("/dashboard");
@@ -41,6 +42,10 @@ const Register = () => {
                         <div>
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" type="email" placeholder="Enter your email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="phone">Phone Number</Label>
+                            <Input id="phone" type="tel" placeholder="Enter your phone number" required value={phone} onChange={(e) => setPhone(e.target.value)} />
                         </div>
                         <div>
                             <Label htmlFor="password">Password</Label>

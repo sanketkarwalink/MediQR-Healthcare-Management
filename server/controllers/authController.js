@@ -8,7 +8,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Function to generate JWT token
 const generateToken = (user) => {
     return jwt.sign(
-        { id: user._id, name: user.name, email: user.email },
+        { id: user._id, name: user.name, email: user.email, phone: user.phone },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
     );
@@ -17,7 +17,7 @@ const generateToken = (user) => {
 // Register Route
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, phone, password } = req.body;
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: "Email already registered" });
@@ -25,14 +25,14 @@ const registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(12);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new User({ name, email, password: hashedPassword });
+        const newUser = new User({ name, email, phone, password: hashedPassword });
         await newUser.save();
 
         const token = generateToken(newUser);
         res.status(201).json({
             message: "User registered successfully",
             token,
-            user: { id: newUser._id, name: newUser.name, email: newUser.email }
+            user: { id: newUser._id, name: newUser.name, email: newUser.email, phone: newUser.phone }
         });
 
     } catch (err) {
@@ -59,7 +59,7 @@ const loginUser = async (req, res) => {
 
         res.json({
             token,
-            user: { id: user._id, name: user.name, email: user.email }
+            user: { id: user._id, name: user.name, email: user.email, phone: user.phone }
         });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error", error: err.message });
@@ -86,7 +86,29 @@ const googleLogin = async (req, res) => {
 
         let user = await User.findOne({ email });
         if (!user) {
+            // Create new user with Google authentication
             user = await User.create({ email, name, profilePicture: picture, googleId });
+        } else {
+            // CRITICAL FIX: Always restore/update Google ID for existing users
+            // This fixes corrupted accounts that lost their googleId
+            user.googleId = googleId;
+            
+            // Update profile picture if not set or if it's not a Google picture
+            if (picture && (!user.profilePicture || !user.profilePicture.includes('googleusercontent'))) {
+                user.profilePicture = picture;
+            }
+            
+            // SECURITY: Clear any password-related fields for Google accounts
+            // This prevents mixed authentication methods
+            if (user.password || user.resetPasswordToken) {
+                console.log(`Cleaning up corrupted Google account: ${email}`);
+                user.password = undefined;
+                user.resetPasswordToken = undefined;
+                user.resetPasswordExpires = undefined;
+            }
+            
+            await user.save();
+            console.log(`Google account restored/updated: ${email}`);
         }
 
         const jwtToken = generateToken(user);
