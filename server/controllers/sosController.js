@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import User from "../models/User.js";
 import MedicalData from "../models/MedicalData.js";
-import insuranceSchema from "../models/insuranceSchema.js";
+import insuranceSchema from "../models/InsuranceSchema.js";
 import nodemailer from "nodemailer";
 
 dotenv.config();

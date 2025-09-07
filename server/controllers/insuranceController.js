@@ -1,4 +1,4 @@
-import Insurance from '../models/insuranceSchema.js';
+import Insurance from '../models/InsuranceSchema.js';
 
 /**
  * @desc   Get logged-in user's insurance info
