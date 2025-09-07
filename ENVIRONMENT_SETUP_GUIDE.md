@@ -51,8 +51,8 @@ SMTP_PASS=your_16_character_app_password
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=sanketkarwa.inbox@gmail.com
-SMTP_PASS=abcd efgh ijkl mnop
+SMTP_USER=your_gmail@gmail.com
+SMTP_PASS=your_16_character_app_password
 ```
 
 ---

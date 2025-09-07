@@ -12,12 +12,23 @@ cd MediQR-Healthcare-Management
 cd server && npm install
 cd ../client && npm install
 
-# 3. Start Application
-cd ../server && node server.js    # Backend (Port 5000)
+# 3. Environment Setup (IMPORTANT!)
+cd ../server
+cp .env.example .env
+# Edit .env with your actual credentials (never commit this file!)
+
+# 4. Start Application
+node server.js    # Backend (Port 5000)
 cd ../client && npm run dev       # Frontend (Port 5173)
 
-# 4. Open: http://localhost:5173
+# 5. Open: http://localhost:5173
 ```
+
+## 🔒 Security Notice
+- **Never commit `.env` files** containing real credentials
+- **Use `.env.example`** as template for required environment variables
+- **Always use app passwords** for email services (not your main password)
+- **Follow the security guidelines** in `ENVIRONMENT_SETUP_GUIDE.md`
 
 ## 👥 Team & My Role
 
